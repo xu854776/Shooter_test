@@ -1,0 +1,2 @@
+../Core/Src/friction.c:13:6:sendMessage	8	static
+../Core/Src/friction.c:39:6:ChassisCtrl	16	static
