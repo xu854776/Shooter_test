@@ -62,10 +62,10 @@ void Can_MessageConfig(void)
 //	Can_cmdHeader[Motor_Yaw_ID].StdId = 0x1FF;
 //    Can_recHeader[Motor_Yaw_ID].StdId = 0x206;             //yaw id=2
 //
-//	Can_cmdHeader[Motor_AmmoFeed_ID].StdId = 0x1FF;
-//    Can_recHeader[Motor_AmmoFeed_ID].StdId = 0x207;               //c610 id =7
-//
-//
+	Can_cmdHeader[Motor_AmmoFeed_ID].StdId = 0x1FF;
+    Can_recHeader[Motor_AmmoFeed_ID].StdId = 0x207;               //c610 id =7
+
+
 
 }
 void MX_CAN1_Init(void)
@@ -201,7 +201,41 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
 			Motor[2].current = (uint16_t)(Can_RxData[4]<<8) + Can_RxData[5];
 			Motor[2].temp = Can_RxData[6];
 		break;
+		case 0x203:
+			Motor[3].speed = (uint16_t)(Can_RxData[2]<<8) + Can_RxData[3];
+			Motor[3].angle = ((Can_RxData[0]<<8) + Can_RxData[1]);
+			Motor[3].current = (uint16_t)(Can_RxData[4]<<8) + Can_RxData[5];
+			Motor[3].temp = Can_RxData[6];
+		break;
+		case 0x204:
+			Motor[4].speed = (uint16_t)(Can_RxData[2]<<8) + Can_RxData[3];
+			Motor[4].angle = ((Can_RxData[0]<<8) + Can_RxData[1]);
+			Motor[4].current = (uint16_t)(Can_RxData[4]<<8) + Can_RxData[5];
+			Motor[4].temp = Can_RxData[6];
+		break;
+//		case 0x205:
+//			Motor[Motor_Pitch_ID].speed = (uint16_t)(Can_RxData[2]<<8) + Can_RxData[3];
+//			Motor[Motor_Pitch_ID].angle = ((Can_RxData[0]<<8) + Can_RxData[1]);
+//			Motor[Motor_Pitch_ID].current = (uint16_t)(Can_RxData[4]<<8) + Can_RxData[5];
+//			Motor[Motor_Pitch_ID].temp = Can_RxData[6];
+//			feedDog(&motor_WatchDog[5]);
+//		break;
+//
+//		case 0x206:
+//			Motor[Motor_Yaw_ID].speed = (uint16_t)(Can_RxData[2]<<8) + Can_RxData[3];
+//			Motor[Motor_Yaw_ID].angle = ((Can_RxData[0]<<8) + Can_RxData[1]);
+//			Motor[Motor_Yaw_ID].current = (uint16_t)(Can_RxData[4]<<8) + Can_RxData[5];
+//			Motor[Motor_Yaw_ID].temp = Can_RxData[6];
+//			feedDog(&motor_WatchDog[6]);
+//
+//		break;
+
+		case 0x207:
+		     Motor[Motor_AmmoFeed_ID].speed = (uint16_t)(Can_RxData[2]<<8) + Can_RxData[3];
+		break;
 		}
+
+
 	}
 }
 /* USER CODE END 1 */

@@ -46,6 +46,7 @@ extern uint8_t Can_TxData[8];
 /* USER CODE BEGIN Prototypes */
 void Can_MessageConfig(void);
 void Can_Filter1Config(void);
+void MX_CAN1_Init(void);
 /* USER CODE END Prototypes */
 
 #ifdef __cplusplus

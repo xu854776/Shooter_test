@@ -59,7 +59,7 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-
+int show_motor1,show_motor2=0;
 /* USER CODE END 0 */
 
 /**
@@ -106,11 +106,14 @@ int main(void)
 	Motor[1].target_speed = 0;
 	Motor[2].target_speed = 0;
 	HAL_Delay(1000);
-	Motor[1].target_speed = -80;
-	Motor[2].target_speed = 80;
+	Motor[1].target_speed = 3000;//目前速度3000，可以打到2m内
+	Motor[2].target_speed = -3000;
+	Motor[3].target_speed = 1000;
   while (1)
   {
 	sendMessage();
+	show_motor1=Motor[1].speed;
+	show_motor2=-Motor[2].speed;
 	HAL_Delay(1);
 	//HAL_CAN_ActivateNotification(&hcan1, CAN_IT_RX_FIFO0_MSG_PENDING);
     /* USER CODE END WHILE */

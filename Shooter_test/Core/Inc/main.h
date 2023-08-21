@@ -33,7 +33,7 @@ extern "C" {
 /* USER CODE BEGIN Includes */
 #define Motor_RightFriction_ID 1
 #define Motor_LeftFriction_ID 2
-
+#define Motor_AmmoFeed_ID 7
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/

@@ -52,6 +52,9 @@ default.size.stdout \
 OBJDUMP_LIST += \
 Shooter_test.list \
 
+OBJCOPY_HEX += \
+Shooter_test.hex \
+
 
 # All Target
 all: main-build
@@ -60,8 +63,8 @@ all: main-build
 main-build: Shooter_test.elf secondary-outputs
 
 # Tool invocations
-Shooter_test.elf Shooter_test.map: $(OBJS) $(USER_OBJS) C:\Users\DELL\Desktop\PWMtest\Shooter_test\STM32F407IGHX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-gcc -o "Shooter_test.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"C:\Users\DELL\Desktop\PWMtest\Shooter_test\STM32F407IGHX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Shooter_test.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Shooter_test.elf Shooter_test.map: $(OBJS) $(USER_OBJS) C:\Users\DELL\Desktop\shooter\Shooter_test\Shooter_test\STM32F407IGHX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-gcc -o "Shooter_test.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"C:\Users\DELL\Desktop\shooter\Shooter_test\Shooter_test\STM32F407IGHX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Shooter_test.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 
@@ -75,12 +78,17 @@ Shooter_test.list: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
 	@echo 'Finished building: $@'
 	@echo ' '
 
+Shooter_test.hex: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-objcopy  -O ihex $(EXECUTABLES) "Shooter_test.hex"
+	@echo 'Finished building: $@'
+	@echo ' '
+
 # Other Targets
 clean:
-	-$(RM) Shooter_test.elf Shooter_test.list Shooter_test.map default.size.stdout
+	-$(RM) Shooter_test.elf Shooter_test.hex Shooter_test.list Shooter_test.map default.size.stdout
 	-@echo ' '
 
-secondary-outputs: $(SIZE_OUTPUT) $(OBJDUMP_LIST)
+secondary-outputs: $(SIZE_OUTPUT) $(OBJDUMP_LIST) $(OBJCOPY_HEX)
 
 fail-specified-linker-script-missing:
 	@echo 'Error: Cannot find the specified linker script. Check the linker settings in the build configuration.'
