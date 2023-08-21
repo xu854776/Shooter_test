@@ -34,6 +34,8 @@ extern "C" {
 #define Motor_RightFriction_ID 1
 #define Motor_LeftFriction_ID 2
 #define Motor_AmmoFeed_ID 7
+#define RC_FRAME_LENGTH 18
+#define SBUS_RX_BUF_NUM 36
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/

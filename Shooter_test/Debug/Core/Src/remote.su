@@ -1,0 +1,5 @@
+../Core/Src/remote.c:23:6:RemoteUnable	4	static
+../Core/Src/remote.c:27:6:RemoteRestart	24	static
+../Core/Src/remote.c:40:6:HAL_UART_RxCpltCallback	16	static
+../Core/Src/remote.c:99:9:RemoteDataIsError	4	static
+../Core/Src/remote.c:138:6:RemoteAutoRefresh	8	static

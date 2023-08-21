@@ -24,6 +24,8 @@
 #include "can.h"
 #include "pid.h"
 #include "friction.h"
+#include "remote.h"
+#include "WatchDog.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -44,6 +46,9 @@
 /* Private variables ---------------------------------------------------------*/
 CAN_HandleTypeDef hcan1;
 
+UART_HandleTypeDef huart3;
+DMA_HandleTypeDef hdma_usart3_rx;
+
 /* USER CODE BEGIN PV */
 
 /* USER CODE END PV */
@@ -51,6 +56,8 @@ CAN_HandleTypeDef hcan1;
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
+static void MX_DMA_Init(void);
+static void MX_USART3_UART_Init(void);
 /* USER CODE BEGIN PFP */
 void Can_MessageConfig(void);
 void Can_Filter1Config(void);
@@ -59,7 +66,9 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-int show_motor1,show_motor2=0;
+int show_motor1,show_motor2,friction_speed_commend,ammo_feed_commend=0;
+extern uint8_t RC_buff[18];
+
 /* USER CODE END 0 */
 
 /**
@@ -90,7 +99,9 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
+  MX_DMA_Init();
   MX_CAN1_Init();
+  MX_USART3_UART_Init();
   /* USER CODE BEGIN 2 */
   Can_MessageConfig();
   Can_Filter1Config();
@@ -100,18 +111,43 @@ int main(void)
   PID_Clear(&PID_Motor_Angle[0]);
   PID_Init();
   /* USER CODE END 2 */
-
+  HAL_UART_Receive_DMA(&huart3, RC_buff, RC_FRAME_LENGTH);//初始化遥控器DMA
+  __HAL_UART_ENABLE_IT(&huart3, UART_IT_IDLE);//IDLE 中断使能
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
 	Motor[1].target_speed = 0;
 	Motor[2].target_speed = 0;
 	HAL_Delay(1000);
-	Motor[1].target_speed = 3000;//目前速度3000，可以打到2m内
-	Motor[2].target_speed = -3000;
-	Motor[3].target_speed = 1000;
+	Motor[1].target_speed = 0;//3000;//目前速度3000，可以打�?2m�?
+	Motor[2].target_speed = 0;//-3000;
+	Motor[3].target_speed = 0;//5000;
   while (1)
   {
-	sendMessage();
+  Motor_Status = 1;
+  Dog_Status_update(&remote_WatchDog);//remote WatchDog update
+//	sendMessage();
+  if(remote_WatchDog.status)
+	{
+	/****************遥控器控制*******************/
+	friction_speed_commend = RC_Ctl.rc.ch2*5;
+	ammo_feed_commend = RC_Ctl.rc.ch4*5;
+	if(RC_Ctl.rc.sw2 == 2)
+	{
+		Motor[1].target_speed = friction_speed_commend;
+		Motor[2].target_speed = -friction_speed_commend;
+		Motor[3].target_speed = ammo_feed_commend;
+		sendMessage();
+		HAL_Delay(10);
+	}
+	else
+	{
+		Motor[1].target_speed = 0;
+		Motor[2].target_speed = 0;
+		Motor[3].target_speed = 0;
+		sendMessage();
+		HAL_Delay(10);
+	}
+	}
 	show_motor1=Motor[1].speed;
 	show_motor2=-Motor[2].speed;
 	HAL_Delay(1);
@@ -170,6 +206,55 @@ void SystemClock_Config(void)
 
 
 /**
+  * @brief USART3 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_USART3_UART_Init(void)
+{
+
+  /* USER CODE BEGIN USART3_Init 0 */
+
+  /* USER CODE END USART3_Init 0 */
+
+  /* USER CODE BEGIN USART3_Init 1 */
+
+  /* USER CODE END USART3_Init 1 */
+  huart3.Instance = USART3;
+  huart3.Init.BaudRate = 100000;
+  huart3.Init.WordLength = UART_WORDLENGTH_9B;
+  huart3.Init.StopBits = UART_STOPBITS_1;
+  huart3.Init.Parity = UART_PARITY_EVEN;
+  huart3.Init.Mode = UART_MODE_RX;
+  huart3.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+  huart3.Init.OverSampling = UART_OVERSAMPLING_16;
+  if (HAL_UART_Init(&huart3) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN USART3_Init 2 */
+
+  /* USER CODE END USART3_Init 2 */
+
+}
+
+/**
+  * Enable DMA controller clock
+  */
+static void MX_DMA_Init(void)
+{
+
+  /* DMA controller clock enable */
+  __HAL_RCC_DMA1_CLK_ENABLE();
+
+  /* DMA interrupt init */
+  /* DMA1_Stream1_IRQn interrupt configuration */
+  HAL_NVIC_SetPriority(DMA1_Stream1_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(DMA1_Stream1_IRQn);
+
+}
+
+/**
   * @brief GPIO Initialization Function
   * @param None
   * @retval None
@@ -182,6 +267,7 @@ static void MX_GPIO_Init(void)
   /* GPIO Ports Clock Enable */
   __HAL_RCC_GPIOA_CLK_ENABLE();
   __HAL_RCC_GPIOD_CLK_ENABLE();
+  __HAL_RCC_GPIOC_CLK_ENABLE();
   __HAL_RCC_GPIOH_CLK_ENABLE();
 
 /* USER CODE BEGIN MX_GPIO_Init_2 */

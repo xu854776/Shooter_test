@@ -1,0 +1,4 @@
+../Core/Src/WatchDog.c:22:6:feedDog	16	static
+../Core/Src/WatchDog.c:32:6:Dog_Status_update	16	static
+../Core/Src/WatchDog.c:39:6:WatchDogAllUpdate	16	static
+../Core/Src/WatchDog.c:55:6:OfflineProtection	16	static

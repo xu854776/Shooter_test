@@ -1,0 +1,5 @@
+remote.c:23:6:RemoteUnable	1
+remote.c:27:6:RemoteRestart	7
+remote.c:40:6:HAL_UART_RxCpltCallback	14
+remote.c:99:9:RemoteDataIsError	7
+remote.c:138:6:RemoteAutoRefresh	2
