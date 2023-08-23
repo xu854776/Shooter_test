@@ -134,7 +134,7 @@ int main(void)
 	if(RC_Ctl.rc.sw2 == 2)
 	{
 		Motor[1].target_speed = friction_speed_commend;
-		Motor[2].target_speed = -friction_speed_commend;
+		Motor[2].target_speed = friction_speed_commend;
 		Motor[3].target_speed = ammo_feed_commend;
 		sendMessage();
 		HAL_Delay(10);
